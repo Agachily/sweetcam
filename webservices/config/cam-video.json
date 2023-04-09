@@ -1,0 +1,11 @@
+{
+    "timeout": 1000,
+    "xRotationAngle": 10,
+    "yRotationAngle": 10,
+    "width": 0.3,
+    "height": 0.3,
+    "videoPathMp4": "/videos/jfk.mp4",
+    "videoPathWebm": "/videos/jfk.webm",
+    "brandImagePath": "/brands/Hikvision.png",
+    "brandImageWidth": "30%"
+}

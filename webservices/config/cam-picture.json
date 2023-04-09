@@ -1,0 +1,9 @@
+{
+    "timeout": 1000,
+    "xRotationAngle": 10,
+    "yRotationAngle": 10,
+    "width": 0.3,
+    "height": 0.3,
+    "zoomRatio": 82,
+    "imgPath": "/images/img.png"
+}

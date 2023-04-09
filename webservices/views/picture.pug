@@ -1,0 +1,174 @@
+doctype html
+html
+    head
+        meta(charset='UTF-8')
+        style.
+            button {
+                border: none;
+                color: black;
+                padding: 8px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 25px;
+            }
+
+            canvas {
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            #control {
+                padding-top: 15px;
+                text-align: center;
+            }
+
+            #brand_image {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+    body
+        script
+            const brandImagePath = #{brandImagePath}
+            const brandImageWidth = #{brandImageWidth}
+        div
+            img(id='brand_image' src=brandImagePath width=brandImageWidth)
+        div
+            p(style="font-size:13px; margin-left: 56.5%;")
+                |Welcome #{userName},&#32;
+                a(href="/logout") Logout
+        div(id='img_block')
+            div(id='container')
+            div(id='control')
+                button(id='up' type='button' ) &#x25B2;
+                button(id='down' type='button' style='margin-left:10px;') &#x25BC;
+                button(id='left' type='button' style='margin-left:10px;') &#x25C0;
+                button(id='right' type='button' style='margin-left:10px;') &#x25B6;
+                button(id='zoom-in' type='button' style='margin-left:10px;') +
+                button(id='zoom-out' type='button' style='margin-left:10px;') -
+        script(async src='https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js')
+        script(type='importmap').
+            {"imports": {"three": "https://unpkg.com/three@0.138.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.138.0/examples/jsm/"}}
+        script(type='module').
+            import * as THREE from 'three';
+            let camera, scene, renderer;
+
+            let lon = 0, lat = 0,
+                phi = 0, theta = 0,
+                onPointerDownPointerX = 0,
+                onPointerDownPointerY = 0,
+                onPointerDownLon = 0,
+                onPointerDownLat = 0;
+            const imgPath = '#{imgPath}'
+            const distance = 50;
+
+            let xRotationAngle = #{xRotationAngle},
+                yRotationAngle = #{yRotationAngle},
+                timeout = #{timeout},
+                width = #{width},
+                height = #{height},
+                zoomRatio = #{zoomRatio}
+            init();
+            animate();
+
+            function init() {
+                const container = document.getElementById( 'container' );
+                const videoImg = document.getElementById( 'video-img' );
+                camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 1100 );
+                scene = new THREE.Scene();
+                const geometry = new THREE.SphereGeometry( 500, 60, 40 );
+                geometry.scale( - 1, 1, 1 );
+                const texture = new THREE.TextureLoader().load( imgPath );
+                const material = new THREE.MeshBasicMaterial( { map: texture } );
+
+                const mesh = new THREE.Mesh( geometry, material );
+                scene.add( mesh );
+
+                renderer = new THREE.WebGLRenderer();
+                renderer.setPixelRatio( window.devicePixelRatio );
+                renderer.setSize( window.innerWidth * width, window.innerHeight * height );
+                container.appendChild( renderer.domElement );
+
+                document.addEventListener( 'pointerdown', onPointerDown );
+                document.getElementById('up').addEventListener('click', rotateUp)
+                document.getElementById('down').addEventListener('click', rotateDown)
+                document.getElementById('left').addEventListener('click', rotateLeft)
+                document.getElementById('right').addEventListener('click', rotateRight)
+                document.getElementById('zoom-in').addEventListener('click', zoomIn)
+                document.getElementById('zoom-out').addEventListener('click', zoomOut)
+                window.addEventListener( 'resize', onWindowResize );
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize( window.innerWidth * width, window.innerHeight * height);
+            }
+
+            function onPointerDown( event ) {
+                onPointerDownPointerX = event.clientX;
+                onPointerDownPointerY = event.clientY;
+
+                onPointerDownLon = lon;
+                onPointerDownLat = lat;
+            }
+
+            function rotateRight( event ) {
+                setTimeout(() => {
+                lon = xRotationAngle + onPointerDownLon;
+                }, timeout)
+            }
+
+            function rotateLeft( event ) {
+                setTimeout(() => {
+                lon = -xRotationAngle + onPointerDownLon;
+                }, timeout)
+            }
+
+            function rotateUp( event ) {
+                setTimeout(() => {
+                lat = -yRotationAngle + onPointerDownLat;
+                }, timeout)
+            }
+
+            function rotateDown( event ) {
+                setTimeout(() => {
+                lat = yRotationAngle + onPointerDownLat;
+                }, timeout)
+            }
+
+            function zoomIn(event) {
+                setTimeout(() => {
+                const fov = camera.fov + -zoomRatio * 0.05;
+                camera.fov = THREE.MathUtils.clamp( fov, 10, 75 );
+                camera.updateProjectionMatrix();
+                }, timeout)
+            }
+
+            function zoomOut(event) {
+                setTimeout(() => {
+                const fov = camera.fov + zoomRatio * 0.05;
+                camera.fov = THREE.MathUtils.clamp( fov, 10, 75 );
+                camera.updateProjectionMatrix();
+                }, timeout)
+            }
+
+            function animate() {
+                requestAnimationFrame( animate );
+                update();
+            }
+
+            function update() {
+                lat = Math.max( - 85, Math.min( 85, lat ) );
+                phi = THREE.MathUtils.degToRad( 90 - lat );
+                theta = THREE.MathUtils.degToRad( lon );
+                camera.position.x = distance * Math.sin( phi ) * Math.cos( theta );
+                camera.position.y = distance * Math.cos( phi );
+                camera.position.z = distance * Math.sin( phi ) * Math.sin( theta );
+                camera.lookAt( 0, 0, 0 );
+                renderer.render( scene, camera );
+            }
