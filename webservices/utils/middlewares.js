@@ -1,5 +1,6 @@
 const logger = require('./logger')
 const jwt = require('jsonwebtoken')
+const jwtServices = require('../utils/jwt-services')
 
 const pathsToBeMonitored = ["/", "/test", "/login"]
 const pathsRequireUserLogin = ["/"]
@@ -13,12 +14,12 @@ const requestLogger = (req, res, next) => {
     /* Check whether the request should be monitored */
     if (pathsToBeMonitored.includes(req.path)) {
         const log = {
-            message: `request ${req.path}`,
+            message: req.path,
             method: req.method,
             body: req.body,
             ip: req.socket.remoteAddress
         }
-        logger.info(log);
+        logger.info(log)
     }
     next()
 }
@@ -30,17 +31,11 @@ const authentication = (req, res, next) => {
     next()
 }
 
-const getTokenFrom = (req) => {
-    const authorization = req.get('authorization')
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '')
-    }
-    return null
-}
+
 
 const verifyToken = (req, res, next) => {
     if (pathsRequireAdminLogin.includes(req.path)) {
-        const decodedToken = jwt.verify(getTokenFrom(req), "test")
+        const decodedToken = jwt.verify(jwtServices.getJWTToken(req), process.env.JWT_SECRET)
         if (!decodedToken.username) {
             return res.status(401).json({ error: 'token invalid' })
         }

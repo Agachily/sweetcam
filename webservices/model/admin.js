@@ -9,6 +9,10 @@ const Admin = sequelize.define("admins", {
     passwordHash: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    chatId: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 })
 

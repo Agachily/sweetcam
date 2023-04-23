@@ -72,7 +72,7 @@ html
                 }
                 axios
                     .post('/login', sentData)
-                    .then( (response) => window.location.href = "/" )
+                    .then( () => window.location.href = "/" )
                     .catch(
                         (error) => {
                             if (error.response.status === 404) {

@@ -5,26 +5,46 @@ const sweetcamServices = require('../services/sweetcam-services')
 const {response} = require("express");
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
+const jwtServices = require("../utils/jwt-services")
+const telegramBot = require("../utils/telegram-bot")
 
 const prefix = process.env.ADMIN_PATH
 
 adminRouter.post(`/${prefix}/login`, async (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
+    const {username, password} = req.body
 
     if (!username || !password) {
         return res.status(400).send({error: 'username or password is null'}).end()
     }
 
-    const passwordHash = await adminServices.findAdminPasswordHashByName(username)
+    const {passwordHash, name, id} = await adminServices.findAdminCredentialsByName(username)
     if (await bcrypt.compare(password, passwordHash)) {
         const userForToken = {
+            id: id,
             username: username
         }
         /* The token will be valid for 60 * 60 seconds */
-        const token = jwt.sign(userForToken, process.env.JWT_SECRET, { expiresIn: 60*60 })
+        const token = jwt.sign(userForToken, process.env.JWT_SECRET, { expiresIn: 60 * 60 })
         res.status(200).send({ token, username })
+    } else {
+        const chatId = await adminServices.findChatIdByName(username)
+        if (chatId) {
+            await telegramBot.sendMessage(chatId, 'Attempt to login as admin failed')
+        }
+        res.status(401).send({ error: 'failed' })
     }
+})
+
+adminRouter.patch(`/${prefix}/password`, async (req, res) => {
+    const newPassword = req.body.newPassword
+
+    if (!newPassword) {
+        return res.status(400).send({error: 'provide new password is null'}).end()
+    }
+    const decodedToken = jwt.verify(jwtServices.getJWTToken(req), process.env.JWT_SECRET)
+    const id = decodedToken.id
+    await adminServices.updatePassword(id, newPassword)
+    return res.status(200).send({message: "password update succeed"}).end()
 })
 
 adminRouter.get(`/${prefix}/picture`, (req, res) => {

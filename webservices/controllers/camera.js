@@ -43,7 +43,7 @@ sweetcamRouter.post('/login', async (req, res) => {
     const currentTime = Date.now()
     if (currentTime - beginTimeOfLogin <= 60_000) {
         session.loginTimes += 1;
-        if (session.loginTimes >= 4) {
+        if (session.loginTimes > 3) {
             return res.status(403).send({ error: "login request reached limit" })
         }
     } else {

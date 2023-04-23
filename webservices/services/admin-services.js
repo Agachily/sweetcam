@@ -1,21 +1,43 @@
-const {User} = require('../module/user')
-const {Admin} = require('../module/admin')
+const {User} = require('../model/user')
+const {Admin} = require('../model/admin')
 const fs = require('fs')
 const multer = require('multer')
 const bcrypt = require('bcrypt')
 
-const addAdmin = async (name, password) => {
+const getNumberOfAdmins = async () => {
+    const number = await Admin.count()
+    console.log(number)
+    return number
+}
+
+const addAdmin = async (name, password, chatId) => {
     const saltRounds = 10
     await Admin.sync()
     const passwordHash = await bcrypt.hash(password, saltRounds)
-    const result = await Admin.create({name: name, passwordHash: passwordHash})
-    return {id: result.id, name: result.name}
+    const result = await Admin.create({name: name, passwordHash: passwordHash, chatId: chatId})
+    return result.id
 }
 
-const findAdminPasswordHashByName = async (name) => {
+const updatePassword = async (id, password) => {
+    const saltRounds = 10
+    const passwordHash = await bcrypt.hash(password, saltRounds)
+    const result = await Admin.update({passwordHash: passwordHash}, {
+        where: {
+            id: id
+        }
+    })
+}
+
+const findAdminCredentialsByName = async (name) => {
     await Admin.sync()
     const result = await Admin.findOne({where: {}})
-    return result.passwordHash
+    return {name: result.name, id: result.id, passwordHash: result.passwordHash}
+}
+
+const findChatIdByName = async (name) => {
+    await Admin.sync()
+    const result = await Admin.findOne({where: {}})
+    return result.chatId
 }
 
 const configCamPicture = (name, value) => {
@@ -72,13 +94,15 @@ const videoStorage = multer.diskStorage({
 
 const uploadVideos = multer({storage: videoStorage}).single('video')
 
-// addAdmin("Jonny", "123456")
-
 module.exports = {
-    findAdminPasswordHashByName,
+    getNumberOfAdmins,
+    addAdmin,
+    findAdminCredentialsByName,
+    findChatIdByName,
     configCamPicture,
     configCamVideo,
     configSweetCam,
+    updatePassword,
     uploadBrands,
     uploadImages,
     uploadVideos

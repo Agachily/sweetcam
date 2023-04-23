@@ -1,11 +1,13 @@
 require('dotenv').config()
 const {requestLogger, authentication, verifyToken, unknownEndpoint, errorHandler} = require('./utils/middlewares')
 const express = require('express')
-const sweetcamRouter = require('./controllers/sweetcam')
+const cameraRouter = require('./controllers/camera')
 const adminRouter = require('./controllers/admin')
 const app = express()
 const sessions = require('express-session')
 const cookieParser = require("cookie-parser")
+const {error} = require("winston");
+const logger = require("./utils/logger");
 
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(sessions({
@@ -13,7 +15,7 @@ app.use(sessions({
     saveUninitialized:true,
     cookie: { maxAge: oneDay },
     resave: false
-}));
+}))
 
 app.use(cookieParser())
 app.set('view engine', 'pug');
@@ -23,7 +25,7 @@ app.use(express.static('public'))
 app.use(requestLogger)
 app.use(authentication)
 app.use(verifyToken)
-app.use(sweetcamRouter)
+app.use(cameraRouter)
 app.use(adminRouter)
 app.use(unknownEndpoint)
 app.use(errorHandler)

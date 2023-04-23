@@ -1,4 +1,4 @@
-const {User} = require("../module/user");
+const {User} = require("../model/user");
 const bcrypt = require("bcrypt");
 
 const saltRounds = 10
@@ -16,4 +16,8 @@ const findUserPasswordHashByName = async (name) => {
     return result === null ? null : result.passwordHash
 }
 
-module.exports = { findUserPasswordHashByName, addUser }
+const getNumberOfUsers = async () => {
+    return await User.count()
+}
+
+module.exports = { findUserPasswordHashByName, addUser, getNumberOfUsers}

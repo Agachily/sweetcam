@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  cowire_service:
+    image: cowrie/cowrie:latest
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - COWRIE_LOCAL_PORT=$COWRIE_LOCAL_PORT
+      - COWRIE_DOCKER_PORT=$COWRIE_DOCKER_PORT
+    ports:
+      - ${COWRIE_LOCAL_PORT}:${COWRIE_DOCKER_PORT}
+    volumes:
+      - ./cowrie-var/log:/cowrie/cowrie-git/var/log/cowrie
+  mysql_service:
+    image: mysql:8.0.28
+    cap_add:
+      - SYS_NICE
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+    ports:
+      - ${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}
+    volumes:
+      - ./initialize.sql:/docker-entrypoint-initdb.d/initialize.sql
+  web_service:
+    depends_on:
+      - mysql_service
+    build: ./webservices # Build the image from the Dockerfile under the webservices folder
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - DB_HOST=mysql_service
+      - DB_USER=$MYSQLDB_USER
+      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - DB_NAME=$MYSQLDB_DATABASE
+      - DB_PORT=$MYSQLDB_DOCKER_PORT
+      - SESSION_SECRET=$SESSION_SECRET
+      - JWT_SECRET=$JWT_SECRET
+      - ADMIN_PATH=$ADMIN_PATH
+      - DEFAULT_ADMIN_NAME=$DEFAULT_ADMIN_NAME
+      - DEFAULT_ADMIN_PASSWORD=$DEFAULT_ADMIN_PASSWORD
+      - TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID
+      - TELEGRAM_TOKEN=$TELEGRAM_TOKEN
+    ports:
+      - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
+    volumes:
+      - ./webservices-info/logs:/app/webservices/logs
+    stdin_open: true
+    tty: true

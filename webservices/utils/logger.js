@@ -1,21 +1,25 @@
 const { format, createLogger, transports } = require("winston");
-const { combine, timestamp, label, prettyPrint } = format;
-const CATEGORY = 'sweetcam';
+require("winston-daily-rotate-file")
+
+const fileRotateTransport = new transports.DailyRotateFile({
+    filename: "logs/%DATE%.log",
+    datePattern: "YYYY-MM-DD",
+    maxFiles: "14d",
+});
 
 const logConfiguration = {
     transports: [
-        new transports.Console()
+        new transports.Console(),
+        fileRotateTransport
     ],
-    format: combine(
-        label({
-            label: CATEGORY
+    format: format.combine(
+        format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss'
         }),
-        timestamp(),
-        prettyPrint()
+        format.printf(info => `${JSON.stringify(info)}`)
     )
 };
 
-const logger =createLogger(logConfiguration);
+const logger= createLogger(logConfiguration);
 
-// logger.log({level: 'info', message: 'Hello world!', test: {asdasd: "asdsadas"}});
 module.exports = logger

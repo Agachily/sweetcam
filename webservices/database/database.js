@@ -1,5 +1,5 @@
-const dbConfig = require("../config/db-config.json")
-const { Sequelize} = require("sequelize")
+const dbConfig = require("../config/db-config");
+const {Sequelize} = require("sequelize")
 
 const sequelize = new Sequelize(
     dbConfig.DB,
