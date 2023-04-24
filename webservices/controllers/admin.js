@@ -1,8 +1,7 @@
 const adminRouter = require('express').Router()
-const {exec} = require('child_process')
 const adminServices = require('../services/admin-services')
+const userServices = require('../services/user-services');
 const sweetcamServices = require('../services/sweetcam-services')
-const {response} = require("express");
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken')
 const jwtServices = require("../utils/jwt-services")
@@ -64,38 +63,12 @@ adminRouter.get(`/${prefix}/video`, (req, res) => {
     res.render("video", config)
 })
 
-adminRouter.get(`/${prefix}/rtsp/start`, (req, res) => {
-    let videoPath = "./public/videos/pano.mp4"
-    let rtspServerPath = "rtsp://localhost:8554/mystream"
-    exec(`../ffmpeg/ffmpeg -re -stream_loop -1 -i ${videoPath} -c copy -f rtsp ${rtspServerPath}`, (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`stdout: ${stdout}`);
-    });
-})
-
-adminRouter.get(`/${prefix}/rtsp/stop`, (req, res) => {
-    exec('sh kill.sh', (error, stdout, stderr) => {
-        console.log(stdout);
-        console.log(stderr);
-        if (error !== null) {
-            console.log(`exec error: ${error}`);
-        }
-    });
-})
-
 /**
  * Add user for the sweetcam service
  */
 adminRouter.post(`/${prefix}/user`, async (req, res) => {
     const userInfo = req.body
-    const savedUser = await adminServices.addUser(userInfo.name, userInfo.password)
+    const savedUser = await userServices.addUser(userInfo.name, userInfo.password)
     res.status(201).json(savedUser)
 })
 

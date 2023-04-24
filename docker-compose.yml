@@ -3,6 +3,7 @@ version: '3.8'
 services:
   cowire_service:
     image: cowrie/cowrie:latest
+    container_name: cowire_service
     restart: unless-stopped
     env_file: ./.env
     environment:
@@ -14,6 +15,7 @@ services:
       - ./cowrie-var/log:/cowrie/cowrie-git/var/log/cowrie
   mysql_service:
     image: mysql:8.0.28
+    container_name: mysql_service
     cap_add:
       - SYS_NICE
     restart: unless-stopped
@@ -26,6 +28,7 @@ services:
     volumes:
       - ./initialize.sql:/docker-entrypoint-initdb.d/initialize.sql
   web_service:
+    container_name: web_service
     depends_on:
       - mysql_service
     build: ./webservices # Build the image from the Dockerfile under the webservices folder
@@ -50,3 +53,16 @@ services:
       - ./webservices-info/logs:/app/webservices/logs
     stdin_open: true
     tty: true
+  rtsp_service:
+    build: ./rtspservices
+    container_name: rtsp_service
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - RTSP_LOCAL_PORT=$RTSP_LOCAL_PORT
+      - RTSP_DOCKER_PORT=$RTSP_DOCKER_PORT
+      - MTX_PROTOCOLS=$MTX_PROTOCOLS
+    ports:
+      - ${RTSP_LOCAL_PORT}:${RTSP_DOCKER_PORT}
+    volumes:
+      - ./videos:/app/rtsp/videos

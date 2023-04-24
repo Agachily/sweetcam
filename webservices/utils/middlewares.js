@@ -31,8 +31,6 @@ const authentication = (req, res, next) => {
     next()
 }
 
-
-
 const verifyToken = (req, res, next) => {
     if (pathsRequireAdminLogin.includes(req.path)) {
         const decodedToken = jwt.verify(jwtServices.getJWTToken(req), process.env.JWT_SECRET)
