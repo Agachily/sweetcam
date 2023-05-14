@@ -60,6 +60,7 @@ html
                 label Password
                 input(type='password' placeholder='Enter password' name='password' required)
                 span(id="passwordErrorMessage" style="font-size:13px; color:red; display: none") The password is not correct
+                span(id="rateErrorMessage" style="font-size:13px; color:red; display: none") Login request reached limit, try one minute later
                 button(type='submit' onclick="login(event)") Login
         script.
             const login = (event) => {
@@ -82,6 +83,10 @@ html
                             if (error.response.status === 401) {
                                 $("#passwordErrorMessage").css("display", "inline-block")
                                 setTimeout(() => $("#passwordErrorMessage").css("display", "none"), 3000)
+                            }
+                            if (error.response.status === 403) {
+                                $("#rateErrorMessage").css("display", "inline-block")
+                                setTimeout(() => $("#rateErrorMessage").css("display", "none"), 3000)
                             }
                         }
                     )

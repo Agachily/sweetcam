@@ -49,7 +49,8 @@ adminRouter.patch(`/${prefix}/password`, async (req, res) => {
 adminRouter.get(`/${prefix}/picture`, (req, res) => {
     const config = {
         ...sweetcamServices.getCamPictureConfig(),
-        ...sweetcamServices.getBrandConfig()
+        ...sweetcamServices.getBrandConfig(),
+        userName: "admin"
     }
     res.render("picture", config);
 })
@@ -58,7 +59,8 @@ adminRouter.get(`/${prefix}/picture`, (req, res) => {
 adminRouter.get(`/${prefix}/video`, (req, res) => {
     const config = {
         ...sweetcamServices.getCamVideoConfig(),
-        ...sweetcamServices.getBrandConfig()
+        ...sweetcamServices.getBrandConfig(),
+        userName: "admin"
     }
     res.render("video", config)
 })
