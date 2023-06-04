@@ -5,6 +5,8 @@ volumes:
     driver: local
   web-servie-log:
     driver: local
+  rtsp-resource:
+    driver: local
 
 services:
   cowrie_service:
@@ -79,3 +81,4 @@ services:
       - ${RTSP_LOCAL_PORT}:${RTSP_DOCKER_PORT}
     volumes:
       - ./videos:/app/rtsp/videos
+      - rtsp-resource:/app/rtsp

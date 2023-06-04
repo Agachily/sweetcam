@@ -69,6 +69,8 @@ The procedures are as follows:
 1. Revise the virtual machine network policy to allow 80 traffic.
 2. git clone https://github.com/Agachily/sweetcam.git
 3. Create and populate the .env file 
-4. Run the application in the background: docker compose up -d
+4. Run the application in the background: `docker compose up -d` (stop with `docker compose down -v`)
 5. Try to connect cowrie: ssh -p 22 root@ip_address
 6. Enter the container of rtsp service: docker exec -it rtsp_service /bin/sh
+7. ffmpeg -re -stream_loop -1 -i fake-video.mp4 -c copy -f rtsp rtsp://localhost:8554/mystream
+8. View it at rtsp://20.197.231.249:554/mystream
