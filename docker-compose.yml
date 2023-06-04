@@ -9,7 +9,7 @@ volumes:
 services:
   cowrie_service:
     image: cowrie/cowrie:latest
-    container_name: cowrie_service
+    container_name: ./cowrieservices
     restart: unless-stopped
     env_file: ./.env
     environment:

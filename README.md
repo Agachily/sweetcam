@@ -40,3 +40,34 @@ Once launching the four services, there are several configurations should be mad
    ```
 
 2. Revise the mediamtx.yml file to configure the logging function of the Mediamtx application.
+
+# Deploy on cloud
+Take Azure Cloud as example.
+## Configure SSH
+First we need to change the used SSH port since the default one 22 should be used by Cowrie honeypot.
+1. sudo vim /etc/ssh/sshd_config.
+2. Change the port to another one, 2404 for example.
+3. Restart ssh service: sudo service ssh restart
+4. Reconnect with new port: ssh -i ./sweetcam_key.pem azureuser@20.107.194.117 -p 2404
+5. Revise the virtual machine network policy to allow 2404 traffic.
+
+## Install Docker tool chain
+1. sudo apt-get -y update
+2. sudo apt-get -y install ca-certificates curl gnupg
+3. sudo install -m 0755 -d /etc/apt/keyrings 
+4. curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg 
+5. sudo chmod a+r /etc/apt/keyrings/docker.gpg
+6. echo \
+   "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+   "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+7. sudo apt-get update
+8. sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+## Deploy application
+The procedures are as follows:
+1. Revise the virtual machine network policy to allow 80 traffic.
+2. git clone https://github.com/Agachily/sweetcam.git
+3. Create and populate the .env file 
+4. Run the application in the background: docker compose up -d
+5. Try to connect cowrie: ssh -p 2222 root@ip_address
