@@ -9,7 +9,7 @@ volumes:
 services:
   cowrie_service:
     image: cowrie/cowrie:latest
-    container_name: ./cowrieservices
+    container_name: cowrie-services
     restart: unless-stopped
     env_file: ./.env
     environment:
@@ -19,6 +19,8 @@ services:
       - ${COWRIE_LOCAL_PORT}:${COWRIE_DOCKER_PORT}
     volumes:
       - cowrie-var:/cowrie/cowrie-git/var
+      - ./cowrie-config/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg
+      - ./cowrie-config/motd:/cowrie/cowrie-git/honeyfs/etc/motd
   mysql_service:
     image: mysql:8.0.28
     container_name: mysql_service
