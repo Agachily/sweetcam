@@ -3,5 +3,6 @@ FROM alpine:3.12
 WORKDIR /app/rtsp
 RUN apk add --no-cache ffmpeg
 COPY --from=rtsp /mediamtx ./
-COPY --from=rtsp /mediamtx.yml ./
+COPY mediamtx.yml ./
+RUN touch mediamtx.log
 ENTRYPOINT [ "./mediamtx" ]

@@ -70,4 +70,5 @@ The procedures are as follows:
 2. git clone https://github.com/Agachily/sweetcam.git
 3. Create and populate the .env file 
 4. Run the application in the background: docker compose up -d
-5. Try to connect cowrie: ssh -p 2222 root@ip_address
+5. Try to connect cowrie: ssh -p 22 root@ip_address
+6. Enter the container of rtsp service: docker exec -it rtsp_service /bin/sh
