@@ -26,10 +26,11 @@ adminRouter.post(`/${prefix}/login`, async (req, res) => {
         const token = jwt.sign(userForToken, process.env.JWT_SECRET, { expiresIn: 60 * 60 })
         res.status(200).send({ token, username })
     } else {
-        const chatId = await adminServices.findChatIdByName(username)
+        /*const chatId = await adminServices.findChatIdByName(username)
         if (chatId) {
             await telegramBot.sendMessage(chatId, 'Attempt to login as admin failed')
-        }
+        }*/
+        adminServices.sendEmail("Attempt to login as admin failed");
         res.status(401).send({ error: 'failed' })
     }
 })

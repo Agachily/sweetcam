@@ -6,21 +6,19 @@ const adminRouter = require('./controllers/admin')
 const app = express()
 const sessions = require('express-session')
 const cookieParser = require("cookie-parser")
-const {error} = require("winston");
-const logger = require("./utils/logger");
 
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(sessions({
     secret: process.env.SESSION_SECRET,
-    saveUninitialized:true,
-    cookie: { maxAge: oneDay },
+    saveUninitialized: true,
+    cookie: {maxAge: oneDay},
     resave: false
 }))
 
 app.use(cookieParser())
-app.set('view engine', 'pug');
+app.set('view engine', 'pug')
 app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({extended: true}))
 app.use(express.static('public'))
 app.use(requestLogger)
 app.use(authentication)

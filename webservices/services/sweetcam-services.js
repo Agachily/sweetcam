@@ -1,6 +1,4 @@
 const fs = require('fs')
-const userServices = require("./user-services");
-const bcrypt = require("bcrypt");
 
 const getCamPictureConfig = () => {
     const jsonString = fs.readFileSync("./config/cam-picture.json");

@@ -1,9 +1,8 @@
-const {User} = require("../model/user");
+const { User } = require("../model/user");
 const bcrypt = require("bcrypt");
 
-const saltRounds = 10
-
 const addUser = async (name, password) => {
+    const saltRounds = 10
     await User.sync()
     const passwordHash = await bcrypt.hash(password, saltRounds)
     const result = await User.create({name: name, passwordHash: passwordHash})

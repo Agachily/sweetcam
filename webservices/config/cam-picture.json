@@ -5,5 +5,6 @@
     "width": 0.3,
     "height": 0.3,
     "zoomRatio": 82,
-    "imgPath": "/images/img.png"
+    "imgPath": "/images/img.png",
+    "rtspAddress": "rtsp://public_ip:554/mystream"
 }

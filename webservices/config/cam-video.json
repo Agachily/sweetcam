@@ -7,5 +7,6 @@
     "videoPathMp4": "/videos/jfk.mp4",
     "videoPathWebm": "/videos/jfk.webm",
     "brandImagePath": "/brands/Hikvision.png",
-    "brandImageWidth": "30%"
+    "brandImageWidth": "30%",
+    "rtspAddress": "rtsp://<public_ip>:554/mystream"
 }

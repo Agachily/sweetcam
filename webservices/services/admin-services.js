@@ -1,8 +1,8 @@
-const {User} = require('../model/user')
-const {Admin} = require('../model/admin')
+const { Admin } = require('../model/admin')
 const fs = require('fs')
 const multer = require('multer')
 const bcrypt = require('bcrypt')
+const transporter = require('../utils/nodemailer');
 
 const getNumberOfAdmins = async () => {
     const number = await Admin.count()
@@ -94,6 +94,17 @@ const videoStorage = multer.diskStorage({
 
 const uploadVideos = multer({storage: videoStorage}).single('video')
 
+const sendEmail = (message) => {
+    const sendHtml = `<p>${message}</p>`;
+    const mailOptions = {
+        from: process.env.EMAIL_ADDRESS,
+        to: process.env.EMAIL_ADDRESS_TARGET,
+        subject: 'Sweetcam Notification',
+        html: sendHtml
+    };
+    transporter.sendMail(mailOptions)
+}
+
 module.exports = {
     getNumberOfAdmins,
     addAdmin,
@@ -105,5 +116,6 @@ module.exports = {
     updatePassword,
     uploadBrands,
     uploadImages,
-    uploadVideos
+    uploadVideos,
+    sendEmail
 }

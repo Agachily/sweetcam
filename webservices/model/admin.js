@@ -16,4 +16,4 @@ const Admin = sequelize.define("admins", {
     }
 })
 
-module.exports = {Admin}
+module.exports = { Admin }

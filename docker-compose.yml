@@ -1,9 +1,15 @@
 version: '3.8'
 
+volumes:
+  cowrie-var:
+    driver: local
+  web-servie-log:
+    driver: local
+
 services:
-  cowire_service:
+  cowrie_service:
     image: cowrie/cowrie:latest
-    container_name: cowire_service
+    container_name: cowrie_service
     restart: unless-stopped
     env_file: ./.env
     environment:
@@ -12,7 +18,7 @@ services:
     ports:
       - ${COWRIE_LOCAL_PORT}:${COWRIE_DOCKER_PORT}
     volumes:
-      - ./cowrie-var/log:/cowrie/cowrie-git/var/log/cowrie
+      - cowrie-var:/cowrie/cowrie-git/var
   mysql_service:
     image: mysql:8.0.28
     container_name: mysql_service
@@ -50,7 +56,7 @@ services:
     ports:
       - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
     volumes:
-      - ./webservices-info/logs:/app/webservices/logs
+      - web-servie-log:/app/webservices/logs
     stdin_open: true
     tty: true
   rtsp_service:

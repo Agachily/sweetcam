@@ -3,7 +3,6 @@ const sweetcamServices = require('../services/sweetcam-services')
 const userServices = require('../services/user-services')
 const bcrypt = require("bcrypt");
 
-const saltRounds = 10
 let beginTimeOfLogin = 0;
 
 sweetcamRouter.get('/', (req, res) => {

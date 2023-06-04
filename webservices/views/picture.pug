@@ -35,11 +35,12 @@ html
         script
             const brandImagePath = #{brandImagePath}
             const brandImageWidth = #{brandImageWidth}
+            const rtspAddress = #{rtspAddress}
         div
             img(id='brand_image' src=brandImagePath width=brandImageWidth)
         div
-            p(style="font-size:13px; margin-left: 56.5%;")
-                |Welcome #{userName},&#32;
+            p(style="font-size:13px; text-align:center")
+                | Welcome #{userName},&#32;
                 a(href="/logout") Logout
         div(id='img_block')
             div(id='container')
@@ -50,6 +51,9 @@ html
                 button(id='right' type='button' style='margin-left:10px;') &#x25B6;
                 button(id='zoom-in' type='button' style='margin-left:10px;') +
                 button(id='zoom-out' type='button' style='margin-left:10px;') -
+        div
+            p(style="font-size:10px; text-align:center")
+                | RTSP address: #{rtspAddress}
         script(async src='https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js')
         script(type='importmap').
             {"imports": {"three": "https://unpkg.com/three@0.138.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.138.0/examples/jsm/"}}
