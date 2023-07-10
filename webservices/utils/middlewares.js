@@ -14,7 +14,7 @@ const requestLogger = (req, res, next) => {
     /* Check whether the request should be monitored */
     if (pathsToBeMonitored.includes(req.path)) {
         const log = {
-            message: req.path,
+            path: req.path,
             method: req.method,
             body: req.body,
             ip: req.socket.remoteAddress
