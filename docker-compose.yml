@@ -1,82 +1,83 @@
-version: '3.8'
-
 volumes:
   cowrie-var:
-    driver: local
-  web-servie-log:
-    driver: local
+  web-service-log:
   rtsp-resource:
-    driver: local
+  mysql_data:
 
 services:
   cowrie_service:
     image: cowrie/cowrie:latest
-    container_name: cowrie-services
+    container_name: cowrie_service
     restart: unless-stopped
     env_file: ./.env
     environment:
-      - COWRIE_LOCAL_PORT=$COWRIE_LOCAL_PORT
-      - COWRIE_DOCKER_PORT=$COWRIE_DOCKER_PORT
+      - COWRIE_LOCAL_PORT=${COWRIE_LOCAL_PORT}
+      - COWRIE_DOCKER_PORT=${COWRIE_DOCKER_PORT}
     ports:
       - ${COWRIE_LOCAL_PORT}:${COWRIE_DOCKER_PORT}
     volumes:
       - cowrie-var:/cowrie/cowrie-git/var
       - ./cowrie-config/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg
       - ./cowrie-config/motd:/cowrie/cowrie-git/honeyfs/etc/motd
+
+
   mysql_service:
-    image: mysql:8.0.28
+    image: mysql:9.2.0
     container_name: mysql_service
     cap_add:
       - SYS_NICE
     restart: unless-stopped
     env_file: ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+      - MYSQL_ROOT_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQLDB_DATABASE}
     ports:
       - ${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}
     volumes:
+      -  mysql_data:/var/lib/mysql
       - ./initialize.sql:/docker-entrypoint-initdb.d/initialize.sql
+
   web_service:
     container_name: web_service
     depends_on:
       - mysql_service
-    build: ./webservices # Build the image from the Dockerfile under the webservices folder
+    build: ./webservices
     restart: unless-stopped
     env_file: ./.env
     environment:
       - DB_HOST=mysql_service
-      - DB_USER=$MYSQLDB_USER
-      - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
-      - DB_NAME=$MYSQLDB_DATABASE
-      - DB_PORT=$MYSQLDB_DOCKER_PORT
-      - SESSION_SECRET=$SESSION_SECRET
-      - JWT_SECRET=$JWT_SECRET
-      - ADMIN_PATH=$ADMIN_PATH
-      - DEFAULT_ADMIN_NAME=$DEFAULT_ADMIN_NAME
-      - DEFAULT_ADMIN_PASSWORD=$DEFAULT_ADMIN_PASSWORD
-      - TELEGRAM_CHAT_ID=$TELEGRAM_CHAT_ID
-      - TELEGRAM_TOKEN=$TELEGRAM_TOKEN
-      - EMAIL_ADDRESS=$EMAIL_ADDRESS
-      - EMAIL_PASSWORD=$EMAIL_PASSWORD
-      - EMAIL_ADDRESS_TARGET=$EMAIL_ADDRESS_TARGET
-      - EMAIL_SERVICE=$EMAIL_SERVICE
-      - EMAIL_HOST=$EMAIL_HOST
+      - DB_USER=${MYSQLDB_USER}
+      - DB_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
+      - DB_NAME=${MYSQLDB_DATABASE}
+      - DB_PORT=${MYSQLDB_DOCKER_PORT}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_PATH=${ADMIN_PATH}
+      - DEFAULT_ADMIN_NAME=${DEFAULT_ADMIN_NAME}
+      - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - EMAIL_ADDRESS=${EMAIL_ADDRESS}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_ADDRESS_TARGET=${EMAIL_ADDRESS_TARGET}
+      - EMAIL_SERVICE=${EMAIL_SERVICE}
+      - EMAIL_HOST=${EMAIL_HOST}
     ports:
       - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
     volumes:
-      - web-servie-log:/app/webservices/logs
+      - web-service-log:/app/webservices/logs
     stdin_open: true
     tty: true
+
   rtsp_service:
     build: ./rtspservices
     container_name: rtsp_service
     restart: unless-stopped
     env_file: ./.env
     environment:
-      - RTSP_LOCAL_PORT=$RTSP_LOCAL_PORT
-      - RTSP_DOCKER_PORT=$RTSP_DOCKER_PORT
-      - MTX_PROTOCOLS=$MTX_PROTOCOLS
+      - RTSP_LOCAL_PORT=${RTSP_LOCAL_PORT}
+      - RTSP_DOCKER_PORT=${RTSP_DOCKER_PORT}
+      - MTX_PROTOCOLS=${MTX_PROTOCOLS}
     ports:
       - ${RTSP_LOCAL_PORT}:${RTSP_DOCKER_PORT}
     volumes:
