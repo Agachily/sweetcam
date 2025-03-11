@@ -1,8 +1,11 @@
-FROM aler9/rtsp-simple-server AS rtsp
-FROM alpine:3.12
+FROM aler9/rtsp-simple-server
+
 WORKDIR /app/rtsp
-RUN apk add --no-cache ffmpeg
-COPY --from=rtsp /mediamtx ./
-COPY mediamtx.yml ./
-RUN touch mediamtx.log
-ENTRYPOINT [ "./mediamtx" ]
+
+# Copy configuration
+COPY mediamtx.yml /mediamtx.yml
+
+EXPOSE 8554
+
+# Set default command
+CMD ["mediamtx"]

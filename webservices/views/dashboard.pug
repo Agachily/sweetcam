@@ -1,0 +1,46 @@
+doctype html
+html
+  head
+    title Sweetcam Dashboard
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .logs {
+        margin-top: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 8px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background-color: #f5f5f5;
+      }
+  body
+    h1 Honeypot Activity Dashboard
+    if error
+      div.error= error
+    div.logs
+      h2 Recent Login Attempts
+      table
+        thead
+          tr
+            th Timestamp
+            th IP Address
+            th Username
+            th Password
+            th Success
+        tbody
+          each log in logs || []
+            tr
+              td= log.timestamp
+              td= log.ip
+              td= log.username
+              td= log.password
+              td= log.success ? 'Yes' : 'No' 

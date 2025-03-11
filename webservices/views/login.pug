@@ -1,93 +1,38 @@
 doctype html
 html
     head
-        script(type='text/javascript' src='https://unpkg.com/axios/dist/axios.min.js')
-        script(type='text/javascript' src='https://code.jquery.com/jquery-3.6.3.min.js')
+        title Sweetcam Login
         style.
-            input[type=text], input[type=password] {
-                width: 100%;
-                padding: 12px 20px;
-                margin: 8px 0;
-                display: inline-block;
-                border: 1px solid #ccc;
-                box-sizing: border-box;
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f5f5f5;
             }
-
-            button {
-                background-color: #EC412D;
-                color: white;
-                padding: 14px 20px;
-                margin: 8px 0;
-                border: none;
-                cursor: pointer;
-                width: 100%;
+            .login-form {
+                background: white;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
             }
-
-            button:hover {
-                opacity: 0.8;
-            }
-
-            .container {
-                padding: 16px;
-                width: 30%;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            span.psw {
-                float: right;
-                padding-top: 16px;
-            }
-
-            #brand_image {
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
+            .error {
+                color: red;
+                margin-bottom: 10px;
             }
     body
-        script
-            const brandImagePath = #{brandImagePath}
-            const brandImageWidth = #{brandImageWidth}
-        div
-            div(style="display:inline")
-                img(id='brand_image' src=brandImagePath width=brandImageWidth)
-        form(action="/login" method="post")
-            div(class='container')
-                label Username
-                input(type='text' placeholder='Enter Username' name='username' required)
-                span(id="usernameErrorMessage" style="font-size:13px; color:red; margin-bottom: 15px; display: none") The username is not found
-                br
-                label Password
-                input(type='password' placeholder='Enter password' name='password' required)
-                span(id="passwordErrorMessage" style="font-size:13px; color:red; display: none") The password is not correct
-                span(id="rateErrorMessage" style="font-size:13px; color:red; display: none") Login request reached limit, try one minute later
-                button(type='submit' onclick="login(event)") Login
-        script.
-            const login = (event) => {
-                event.preventDefault()
-                const username = $("input[name=username]").val()
-                const password = $("input[name=password]").val()
-                const sentData = {
-                    username: username,
-                    password: password
-                }
-                axios
-                    .post('/login', sentData)
-                    .then( () => window.location.href = "/" )
-                    .catch(
-                        (error) => {
-                            if (error.response.status === 404) {
-                                $("#usernameErrorMessage").css("display", "inline-block")
-                                setTimeout(() => $("#usernameErrorMessage").css("display", "none"), 3000)
-                            }
-                            if (error.response.status === 401) {
-                                $("#passwordErrorMessage").css("display", "inline-block")
-                                setTimeout(() => $("#passwordErrorMessage").css("display", "none"), 3000)
-                            }
-                            if (error.response.status === 403) {
-                                $("#rateErrorMessage").css("display", "inline-block")
-                                setTimeout(() => $("#rateErrorMessage").css("display", "none"), 3000)
-                            }
-                        }
-                    )
-            }
+        div.login-form
+            h2 Login to Sweetcam
+            if error
+                div.error= error
+            form(method='POST' action='/login')
+                div
+                    label(for='username') Username:
+                    input(type='text' id='username' name='username' required)
+                div
+                    label(for='password') Password:
+                    input(type='password' id='password' name='password' required)
+                div
+                    button(type='submit') Login

@@ -7,6 +7,7 @@ volumes:
     driver: local
   rtsp-resource:
     driver: local
+  node_modules:
 
 services:
   cowrie_service:
@@ -41,7 +42,9 @@ services:
     container_name: web_service
     depends_on:
       - mysql_service
-    build: ./webservices # Build the image from the Dockerfile under the webservices folder
+    build: 
+      context: ./webservices
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file: ./.env
     environment:
@@ -63,22 +66,22 @@ services:
       - EMAIL_SERVICE=$EMAIL_SERVICE
       - EMAIL_HOST=$EMAIL_HOST
     ports:
-      - ${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}
+      - "${NODE_LOCAL_PORT}:${NODE_DOCKER_PORT}"
+    working_dir: /app/webservices
     volumes:
+      - ./webservices:/app/webservices:rw
       - web-servie-log:/app/webservices/logs
-    stdin_open: true
-    tty: true
+      - node_modules:/app/webservices/node_modules
   rtsp_service:
-    build: ./rtspservices
+    image: aler9/rtsp-simple-server
     container_name: rtsp_service
     restart: unless-stopped
     env_file: ./.env
     environment:
-      - RTSP_LOCAL_PORT=$RTSP_LOCAL_PORT
-      - RTSP_DOCKER_PORT=$RTSP_DOCKER_PORT
-      - MTX_PROTOCOLS=$MTX_PROTOCOLS
+      - MTX_PROTOCOLS=tcp
     ports:
       - ${RTSP_LOCAL_PORT}:${RTSP_DOCKER_PORT}
     volumes:
-      - ./videos:/app/rtsp/videos
+      - ./rtspservices/mediamtx.yml:/mediamtx.yml
+      - ./videos:/app/rtsp/videos:rw
       - rtsp-resource:/app/rtsp
