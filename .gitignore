@@ -1,0 +1,16 @@
+# Ignore real environment file
+.env
+
+# Python cache
+__pycache__/
+
+# Logs
+logs/
+*.log
+
+# VS Code settings
+.vscode/
+
+# OS-specific
+.DS_Store
+Thumbs.db
